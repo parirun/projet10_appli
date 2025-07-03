@@ -2,15 +2,12 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Recommandations Client - Projet 10</title>
+  <title>Recommandations de produits par Client</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
       background-color: #f8f9fa;
-    }
-    .card-title {
-      font-weight: bold;
     }
     .spinner-border {
       width: 3rem;
@@ -20,11 +17,11 @@
 </head>
 <body>
   <div class="container mt-5">
-    <h1 class="mb-4">🎯 Recommandations de produits par Client 🎯</h1>
+    <h1 class="mb-4 text-center">🎯 Recommandations de produits par Client 🎯</h1>
 
     <form id="reco-form" class="row g-3">
       <div class="col-md-4">
-        <label for="user_id" class="form-label">Saisir l'Id du client</label>
+        <label for="user_id" class="form-label">Saisir l'ID du client</label>
         <input type="number" name="user_id" id="user_id" class="form-control" value="{{ user_id }}" required>
       </div>
       <div class="col-md-4">
@@ -43,7 +40,7 @@
       </div>
     </div>
 
-    <!-- Résultats -->
+    <!-- Zone d'affichage -->
     <div id="result" class="mt-5"></div>
   </div>
 
@@ -66,23 +63,25 @@
         loader.style.display = 'none';
 
         if (data.recommendations && Array.isArray(data.recommendations)) {
-			  let cards = '<h3>Résultats</h3><div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-3">';
-			  data.recommendations.forEach((item, index) => {
-				cards += `
-				  <div class="col">
-					<div class="card h-100 shadow-sm">
-					  <div class="card-body">
-						<h5 class="card-title">#${index + 1}</h5>
-						<p class="card-text">${item}</p>
-					  </div>
-					</div>
-				  </div>`;
-			  });
-			  cards += '</div>';
-			  resultDiv.innerHTML = cards;
-			} else {
-			  resultDiv.innerHTML = `<div class="alert alert-danger">Erreur : ${JSON.stringify(data)}</div>`;
-			}
+          let cards = '<h3>Résultats</h3><div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-3">';
+          data.recommendations.forEach((item, index) => {
+            cards += `
+              <div class="col">
+                <div class="card h-100 shadow-sm">
+                  <div class="card-body">
+                    <h5 class="card-title">#${index + 1}</h5>
+                    <p class="card-text">Produit ID : ${item}</p>
+                  </div>
+                </div>
+              </div>`;
+          });
+          cards += '</div>';
+          resultDiv.innerHTML = cards;
+        } else if (data.error) {
+          resultDiv.innerHTML = `<div class="alert alert-danger">Erreur API : ${data.error}</div>`;
+        } else {
+          resultDiv.innerHTML = `<div class="alert alert-warning">Aucune recommandation trouvée.</div>`;
+        }
       } catch (err) {
         loader.style.display = 'none';
         resultDiv.innerHTML = `<div class="alert alert-danger">Erreur réseau : ${err}</div>`;
