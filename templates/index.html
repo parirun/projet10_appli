@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Recommandations Client - Projet 10</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .card-title {
+      font-weight: bold;
+    }
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">🎯 Recommandations de produits par Client 🎯</h1>
+
+    <form id="reco-form" class="row g-3">
+      <div class="col-md-4">
+        <label for="user_id" class="form-label">Saisir l'Id du client</label>
+        <input type="number" name="user_id" id="user_id" class="form-control" value="{{ user_id }}" required>
+      </div>
+      <div class="col-md-4">
+        <label for="top_k" class="form-label">Nombre de recommandations</label>
+        <input type="number" name="top_k" id="top_k" class="form-control" value="{{ top_k }}" required>
+      </div>
+      <div class="col-md-4 align-self-end">
+        <button type="submit" class="btn btn-primary w-100">Obtenir recommandations</button>
+      </div>
+    </form>
+
+    <!-- Loader -->
+    <div id="loader" class="text-center mt-5" style="display: none;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+    </div>
+
+    <!-- Résultats -->
+    <div id="result" class="mt-5"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('reco-form');
+    const loader = document.getElementById('loader');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      loader.style.display = 'block';
+      resultDiv.innerHTML = '';
+
+      const user_id = document.getElementById('user_id').value;
+      const top_k = document.getElementById('top_k').value;
+
+      try {
+        const response = await fetch(`/api/reco?user_id=${user_id}&top_k=${top_k}`);
+        const data = await response.json();
+        loader.style.display = 'none';
+
+        if (Array.isArray(data)) {
+          let cards = '<h3>Résultats</h3><div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-3">';
+          data.forEach((item, index) => {
+            cards += `
+              <div class="col">
+                <div class="card h-100 shadow-sm">
+                  <div class="card-body">
+                    <h5 class="card-title">#${index + 1}</h5>
+                    <p class="card-text">${item}</p>
+                  </div>
+                </div>
+              </div>`;
+          });
+          cards += '</div>';
+          resultDiv.innerHTML = cards;
+        } else {
+          resultDiv.innerHTML = `<div class="alert alert-danger">Erreur : ${JSON.stringify(data)}</div>`;
+        }
+      } catch (err) {
+        loader.style.display = 'none';
+        resultDiv.innerHTML = `<div class="alert alert-danger">Erreur réseau : ${err}</div>`;
+      }
+    });
+  </script>
+</body>
+</html>
