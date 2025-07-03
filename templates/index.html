@@ -65,24 +65,24 @@
         const data = await response.json();
         loader.style.display = 'none';
 
-        if (Array.isArray(data)) {
-          let cards = '<h3>Résultats</h3><div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-3">';
-          data.forEach((item, index) => {
-            cards += `
-              <div class="col">
-                <div class="card h-100 shadow-sm">
-                  <div class="card-body">
-                    <h5 class="card-title">#${index + 1}</h5>
-                    <p class="card-text">${item}</p>
-                  </div>
-                </div>
-              </div>`;
-          });
-          cards += '</div>';
-          resultDiv.innerHTML = cards;
-        } else {
-          resultDiv.innerHTML = `<div class="alert alert-danger">Erreur : ${JSON.stringify(data)}</div>`;
-        }
+        if (data.recommendations && Array.isArray(data.recommendations)) {
+			  let cards = '<h3>Résultats</h3><div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-3">';
+			  data.recommendations.forEach((item, index) => {
+				cards += `
+				  <div class="col">
+					<div class="card h-100 shadow-sm">
+					  <div class="card-body">
+						<h5 class="card-title">#${index + 1}</h5>
+						<p class="card-text">${item}</p>
+					  </div>
+					</div>
+				  </div>`;
+			  });
+			  cards += '</div>';
+			  resultDiv.innerHTML = cards;
+			} else {
+			  resultDiv.innerHTML = `<div class="alert alert-danger">Erreur : ${JSON.stringify(data)}</div>`;
+			}
       } catch (err) {
         loader.style.display = 'none';
         resultDiv.innerHTML = `<div class="alert alert-danger">Erreur réseau : ${err}</div>`;
